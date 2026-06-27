@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WahibaFit | Your Sisterly Fitness Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --primary: #ff4d94;
+      --primary-hover: #ff1a75;
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.1);
+      --code-bg: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+      color: var(--text);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
+      color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+      gap: 1.5rem;
+      scroll-behavior: smooth;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      line-height: 1.6;
+      position: relative;
+      animation: fadeInUp 0.3s ease-out;
+      font-size: 0.95rem;
+    }
+
+    .user-bubble {
+      align-self: flex-end;
+      background: var(--primary);
+      color: white;
+      border-bottom-right-radius: 0.25rem;
+      box-shadow: 0 4px 15px rgba(255, 77, 148, 0.3);
+    }
+
+    .ai-bubble {
+      align-self: flex-start;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    .thought-block {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 2px solid var(--primary);
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    .thought-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-style: normal;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .text-content {
+      word-wrap: break-word;
+    }
+
+    /* Markdown Styling */
+    .text-content p {
+      margin: 0 0 0.75rem 0;
+    }
+
+    .text-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .text-content ul,
+    .text-content ol {
+      margin: 0 0 1rem 0;
+      padding-left: 1.25rem;
+    }
+
+    .text-content li {
+      margin-bottom: 0.4rem;
+    }
+
+    .text-content code {
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+
+    .text-content pre {
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    .text-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .text-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .text-content th,
+    .text-content td {
+      border: 1px solid var(--border);
+      padding: 0.5rem;
+      text-align: left;
+    }
+
+    .text-content th {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .typing-indicator {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .input-area {
+      padding: 1.5rem 2rem 2.5rem;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+    }
+
+    .input-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+
+    textarea {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      color: var(--text);
+      padding: 0.85rem 1.25rem;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: none;
+      min-height: 52px;
+      max-height: 200px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(255, 77, 148, 0.1);
+    }
+
+    textarea:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn {
+      background: var(--primary);
+      border: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 4px;
+      padding: 10px 0;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      80%,
+      100% {
+        transform: scale(0);
+      }
+
+      40% {
+        transform: scale(1);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .voice-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 2rem;
+      margin-top: 0.75rem;
+      transition: all 0.2s;
+      width: fit-content;
+    }
+
+    .voice-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .voice-btn.playing {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 77, 148, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 77, 148, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 77, 148, 0); }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <i data-lucide="dumbbell"></i>
+      WahibaFit
+    </div>
+    <div style="font-size: 0.8rem; color: var(--text-muted);">Sisterly Coaching AI</div>
+  </header>
+  <main id="chat">
+    <div class="chat-bubble ai-bubble">
+      <div class="text-content">Salam love! I'm Coach WahibaFit. Ready to work on your goals today? I'm here to support
+        you sister-to-sister. 💛</div>
+    </div>
+  </main>
+  <div class="input-area">
+    <div class="input-container">
+      <div id="typing" class="typing-indicator" style="position: absolute; top: -2.5rem; left: 0;">
+        <div class="loading-dots" style="padding: 0;">
+          <div class="dot" style="width:4px;height:4px;"></div>
+          <div class="dot" style="width:4px;height:4px;"></div>
+          <div class="dot" style="width:4px;height:4px;"></div>
+        </div>
+        Coach WahibaFit is typing...
+      </div>
+      <textarea id="q" placeholder="Ask me anything..." rows="1"></textarea>
+      <button class="action-btn" id="send"><i data-lucide="send" size="20"></i></button>
+      <button class="action-btn" id="stop" style="display: none; background: #475569;"><i data-lucide="square"
+          size="20"></i></button>
+    </div>
+  </div>
+  <script>
+    lucide.createIcons();
+    const chat = document.getElementById("chat");
+    const q = document.getElementById("q");
+    const send = document.getElementById("send");
+    const stop = document.getElementById("stop");
+    const typing = document.getElementById("typing");
+
+    let currentAbortController = null;
+    let currentSpeech = null;
+    let isResponding = false;
+
+    function detectLanguage(text) {
+      const enPatterns = /\b(the|is|and|you|fitness|workout|coach)\b/gi;
+      const frPatterns = /\b(le|la|est|et|vous|forme|sport|entraîneur)\b/gi;
+      
+      const enCount = (text.match(enPatterns) || []).length;
+      const frCount = (text.match(frPatterns) || []).length;
+      
+      if (enCount > frCount && enCount > 0) return 'en-US';
+      if (frCount > enCount && frCount > 0) return 'fr-FR';
+      return null;
+    }
+
+    function speakText(text, lang, btn) {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        if (currentSpeech === text) {
+          btn.classList.remove('playing');
+          btn.innerHTML = '<i data-lucide="volume-2" size="14"></i> Listen';
+          lucide.createIcons();
+          currentSpeech = null;
+          return;
+        }
+      }
+
+      const cleanText = text.replace(/\[Source:.*?\]/g, '').replace(/[*#]/g, '');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = lang;
+
+      // Find a female voice
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => 
+        v.lang.startsWith(lang.split('-')[0]) && 
+        (v.name.toLowerCase().includes('female') || 
+         v.name.toLowerCase().includes('woman') || 
+         v.name.toLowerCase().includes('google') ||
+         v.name.toLowerCase().includes('samantha') ||
+         v.name.toLowerCase().includes('zira') ||
+         v.name.toLowerCase().includes('hortense') ||
+         v.name.toLowerCase().includes('julie'))
+      );
+      
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+      
+      utterance.onstart = () => {
+        btn.classList.add('playing');
+        btn.innerHTML = '<i data-lucide="square" size="14"></i> Stop';
+        lucide.createIcons();
+        currentSpeech = text;
+      };
+
+      utterance.onend = () => {
+        btn.classList.remove('playing');
+        btn.innerHTML = '<i data-lucide="volume-2" size="14"></i> Listen';
+        lucide.createIcons();
+        currentSpeech = null;
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Initialize first message with markdown
+    const firstMsg = chat.querySelector(".ai-bubble .text-content");
+    if (firstMsg) {
+      const text = firstMsg.innerText;
+      firstMsg.innerHTML = marked.parse(text);
+      
+      const lang = detectLanguage(text);
+      if (lang) {
+        const btn = document.createElement("button");
+        btn.className = "voice-btn";
+        btn.innerHTML = '<i data-lucide="volume-2" size="14"></i> Listen';
+        btn.onclick = () => speakText(text, lang, btn);
+        firstMsg.parentElement.appendChild(btn);
+        lucide.createIcons();
+      }
+    }
+
+    function appendBubble(text, isUser) {
+      const bubble = document.createElement("div");
+      bubble.className = `chat-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`;
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "text-content";
+
+      if (isUser) {
+        textDiv.innerText = text;
+      } else if (text) {
+        textDiv.innerHTML = marked.parse(text);
+      }
+
+      bubble.appendChild(textDiv);
+      chat.appendChild(bubble);
+      lucide.createIcons();
+      chat.scrollTop = chat.scrollHeight;
+      return bubble;
+    }
+
+    async function handleSend() {
+      const query = q.value.trim();
+      if (!query || isResponding) return;
+
+      isResponding = true;
+      q.disabled = true;
+      q.value = "";
+      q.style.height = "auto";
+      appendBubble(query, true);
+
+      send.style.display = "none";
+      stop.style.display = "flex";
+      typing.style.display = "flex";
+
+      let currentBubble = appendBubble("", false);
+      let currentTextDiv = currentBubble.querySelector(".text-content");
+
+      currentAbortController = new AbortController();
+      let fullText = "";
+      let currentPartText = "";
+
+      function finalizeBubble(bubble, text) {
+        const lang = detectLanguage(text);
+        if (lang) {
+          const btn = document.createElement("button");
+          btn.className = "voice-btn";
+          btn.innerHTML = '<i data-lucide="volume-2" size="14"></i> Listen';
+          btn.onclick = () => speakText(text, lang, btn);
+          bubble.appendChild(btn);
+          lucide.createIcons();
+        }
+      }
+
+      try {
+        const response = await fetch("/v1/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: currentAbortController.signal,
+          body: JSON.stringify({ query, session_id: "browser_user" })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          typing.style.display = "none";
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const dataStr = line.slice(6).trim();
+              if (dataStr === "[DONE]") continue;
+
+              try {
+                const data = JSON.parse(dataStr);
+                if (data.token) {
+                  const token = data.token;
+                  fullText += token;
+                  currentPartText += token;
+
+                  // Check for split point (double newline)
+                  if (currentPartText.includes("\n\n") && !currentPartText.trim().endsWith("\n\n")) {
+                    const parts = currentPartText.split("\n\n");
+                    const completedPart = parts.shift().trim();
+                    
+                    if (completedPart) {
+                      currentTextDiv.innerHTML = marked.parse(completedPart);
+                      finalizeBubble(currentBubble, completedPart);
+                        
+                      // Start new bubble for the remainder
+                      currentBubble = appendBubble("", false);
+                      currentTextDiv = currentBubble.querySelector(".text-content");
+                      currentPartText = parts.join("\n\n");
+                    }
+                  }
+
+                  currentTextDiv.innerHTML = marked.parse(currentPartText);
+                  chat.scrollTop = chat.scrollHeight;
+                } else if (data.error) {
+                  currentTextDiv.innerHTML += `<br>❌ Error: ${data.error}`;
+                }
+              } catch (e) { }
+            }
+          }
+        }
+        
+        // Finalize the last bubble
+        finalizeBubble(currentBubble, currentPartText.trim());
+
+      } catch (err) {
+        typing.style.display = "none";
+        if (err.name === 'AbortError') {
+          currentTextDiv.innerHTML += "<br>⏹️ Generation stopped.";
+        } else {
+          currentTextDiv.innerHTML += "<br>❌ Connection error.";
+        }
+      } finally {
+        send.style.display = "flex";
+        stop.style.display = "none";
+        typing.style.display = "none";
+        isResponding = false;
+        q.disabled = false;
+        q.focus();
+        currentAbortController = null;
+        lucide.createIcons();
+      }
+    }
+
+    stop.addEventListener("click", () => {
+      if (currentAbortController) currentAbortController.abort();
+    });
+
+    send.addEventListener("click", handleSend);
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+    q.addEventListener("input", () => {
+      q.style.height = "auto";
+      q.style.height = q.scrollHeight + "px";
+    });
+  </script>
+</body>
+
+</html>

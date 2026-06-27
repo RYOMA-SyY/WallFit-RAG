@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+
+# Environment files
+.env
+
+# Vector database (regeneratable)
+chroma_db/
+
+# Logs
+logs/
+*.log
+
+# Generated data
+Evaluation/*.md
+!Evaluation/*.json
+
+# Scratch / generated files
+scratch/__pycache__/
+scratch/extracted_media/
+scratch/images/
+scratch/*.txt
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Large binary files
+*.sqlite3
+*.sqlite
+*.xpt
+*.msi
